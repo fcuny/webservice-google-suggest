@@ -2,7 +2,7 @@ package WebService::Google::Suggest;
 
 use strict;
 use vars qw($VERSION);
-$VERSION = '0.01';
+$VERSION = '0.02';
 
 use Carp;
 use LWP::UserAgent;
@@ -28,7 +28,7 @@ sub complete {
     $response->is_success or croak "Google doesn't respond well: ", $response->code;
 
     my $content = $response->content();
-    $content =~ /^sendRPCDone\(frameElement, ".*?", new Array\((.*?)\), new Array\((.*?)\), new Array\(""\)\)\;$/
+    $content =~ /^window\.google\.ac\.sendRPCDone\(frameElement, ".*?", new Array\((.*?)\), new Array\((.*?)\), new Array\(""\)\)\;$/
 	or croak "Google returns unrecognized format: $content";
     my($queries, $results) = ($1, $2);
     my @queries = map { s/^"(.*?)"$/$1/; $_ } split /, /, $queries;
