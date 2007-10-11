@@ -28,14 +28,19 @@ sub complete {
     $response->is_success or croak "Google doesn't respond well: ", $response->code;
 
     my $content = $response->content();
-    $content =~ /^window\.google\.ac\.sendRPCDone\(frameElement, ".*?", new Array\((.*?)\), new Array\((.*?)\), new Array\(""\)\)\;$/
+    $content =~ /^window\.google\.ac\.\w+\(frameElement, ".*?", new Array\((.*?)\), new Array\(""\)\)\;$/
 	or croak "Google returns unrecognized format: $content";
-    my($queries, $results) = ($1, $2);
-    my @queries = map { s/^"(.*?)"$/$1/; $_ } split /, /, $queries;
-    my @results = map { s/^"([\d,]+) results?"$/$1/; tr/,//d; $_+0 }
-	split /, /, $results;
-    return map { +{ query   => $queries[$_],
-		    results => $results[$_] } } 0..$#queries;
+    my @queries = map { s/^"(.*?)"$/$1/; $_ } split /, /, $1;
+    shift @queries; # new Array(2, ...)
+    my @results;
+    while (my($query, $count) = splice @queries, 0, 2) {
+        $count =~ s/^([\d,]+) results?$/$1/;
+        $count =~ tr/,//d;
+        $count += 0; # numify
+        push @results, { query => $query, results => $count };
+    }
+
+    return @results;
 }
 
 1;
