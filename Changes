@@ -1,5 +1,8 @@
 Revision history for Perl extension WebService::Google::Suggest
 
+0.04  Tue 10 Nov 2009 05:26:27 PM CET  
+        - Fixed per Google Suggest JavaScript updates
+
 0.03  Thu Oct 11 14:35:12 PDT 2007
         - Fixed per Google Suggest JavaScript updates
           (Thanks to Lorimier Loic)

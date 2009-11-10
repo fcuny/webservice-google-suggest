@@ -2,7 +2,7 @@ package WebService::Google::Suggest;
 
 use strict;
 use vars qw($VERSION);
-$VERSION = '0.03';
+$VERSION = '0.04';
 
 use Carp;
 use LWP::UserAgent;
@@ -105,6 +105,9 @@ properties.
 =head1 AUTHOR
 
 Tatsuhiko Miyagawa E<lt>miyagawa@bulknews.netE<gt>
+Franck Cuny E<lt>franck@lumberjaph.netE<gt>
+
+=head1 LICENSE
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.

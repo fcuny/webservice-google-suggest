@@ -1,5 +1,7 @@
 \bRCS\b
 \bCVS\b
+\.svn/
+\.git/
 ^MANIFEST\.
 ^Makefile$
 ~$
@@ -9,3 +11,5 @@
 ^MakeMaker-\d
 \.gz$
 \.cvsignore
+\.shipit
+\.gitignore
