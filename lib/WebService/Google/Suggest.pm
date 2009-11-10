@@ -13,7 +13,7 @@ $CompleteURL = "http://www.google.com/complete/search?hl=en&js=true&qu=";
 
 sub new {
     my $class = shift;
-    my $ua = LWP::UserAgent->new();
+    my $ua    = LWP::UserAgent->new();
     $ua->agent("Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)");
     bless { ua => $ua }, $class;
 }
@@ -21,20 +21,22 @@ sub new {
 sub ua { $_[0]->{ua} }
 
 sub complete {
-    my($self, $query) = @_;
+    my ( $self, $query ) = @_;
     my $url = $CompleteURL . uri_escape($query);
 
     my $response = $self->ua->get($url);
-    $response->is_success or croak "Google doesn't respond well: ", $response->code;
+    $response->is_success
+        or croak "Google doesn't respond well: ", $response->code;
 
     my $content = $response->content();
-    $content =~ /^window\.google\.ac\.\w+\(frameElement, ".*?", new Array\((.*?)\), new Array\(""\)\)\;$/
-	or croak "Google returns unrecognized format: $content";
-    my @queries = map { s/^"(.*?)"$/$1/; $_ } split /, /, $1;
-    shift @queries; # new Array(2, ...)
+    $content =~ /^window\.google\.ac\.\w+\(\["([^"]+)",\[(.*)\]\)$/
+        or croak "Google returns unrecognized format: $content";
+
+    my ( $user_query, $array ) = ( $1, $2 );
     my @results;
-    while (my($query, $count) = splice @queries, 0, 2) {
-        $count =~ s/^([\d,]+) results?$/$1/;
+    while ( $array =~ /\[([^\]]+)\]/g ) {
+        my $row = $1;
+        my ( $query, $count ) = $row =~ /\"([^"]+)\",\"([\d,]+) results?/;
         $count =~ tr/,//d;
         $count += 0; # numify
         push @results, { query => $query, results => $count };
