@@ -1,15 +1,15 @@
 package WebService::Google::Suggest;
 
+# ABSTRACT: Google Suggest as an API
+
 use strict;
-use vars qw($VERSION);
-$VERSION = '0.04';
+use warnings;
 
 use Carp;
 use LWP::UserAgent;
 use URI::Escape;
 
-use vars qw($CompleteURL);
-$CompleteURL = "http://www.google.com/complete/search?hl=en&js=true&qu=";
+our $CompleteURL = "http://www.google.com/complete/search?hl=en&js=true&qu=";
 
 sub new {
     my $class = shift;
@@ -37,7 +37,6 @@ sub complete {
     while ( $array =~ /\[([^\]]+)\]/g ) {        
         my $row = $1;
         my ( $query, $count, $rank ) = $row =~ /\"([^"]+)\",\"([\d]+)?\",\"([\d]+)?\"/;
-        $count =~ tr/,//d;
         $count += 0; # numify
         $rank  += 0;
         push @results, { query => $query, results => $count, rank => $rank };
@@ -48,10 +47,6 @@ sub complete {
 
 1;
 __END__
-
-=head1 NAME
-
-WebService::Google::Suggest - Google Suggest as an API
 
 =head1 SYNOPSIS
 
@@ -104,19 +99,6 @@ User-Agent (Windows IE by default), timeout seconds and various
 properties.
 
 =back
-
-=head1 AUTHOR
-
-Tatsuhiko Miyagawa E<lt>miyagawa@bulknews.netE<gt>
-
-Franck Cuny E<lt>franck@lumberjaph.netE<gt>
-
-=head1 LICENSE
-
-This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself.
-
-This module gives you B<NO WARRANTY>.
 
 =head1 SEE ALSO
 
