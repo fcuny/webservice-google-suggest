@@ -34,12 +34,13 @@ sub complete {
 
     my ( $user_query, $array ) = ( $1, $2 );
     my @results;
-    while ( $array =~ /\[([^\]]+)\]/g ) {
+    while ( $array =~ /\[([^\]]+)\]/g ) {        
         my $row = $1;
-        my ( $query, $count ) = $row =~ /\"([^"]+)\",\"([\d,]+) results?/;
+        my ( $query, $count, $rank ) = $row =~ /\"([^"]+)\",\"([\d]+)?\",\"([\d]+)?\"/;
         $count =~ tr/,//d;
         $count += 0; # numify
-        push @results, { query => $query, results => $count };
+        $rank  += 0;
+        push @results, { query => $query, results => $count, rank => $rank };
     }
 
     return @results;
@@ -56,10 +57,12 @@ WebService::Google::Suggest - Google Suggest as an API
 
   use WebService::Google::Suggest;
 
-  my $suggest = WebService::Google::Suggest->new();
+  my $suggest     = WebService::Google::Suggest->new();
   my @suggestions = $suggest->complete("goog");
   for my $suggestion (@suggestions) {
-      print "$suggestion->{query}: $suggestion->{results} results\n";
+    print "[" . $suggestion->{rank} . "] "
+      . $suggestion->{query} . ":"
+      . $suggestion->{results} results . "\n";
   }
 
 =head1 DESCRIPTION
@@ -85,8 +88,8 @@ the query. Suggestions are in a list of hashrefs, for example with
 query "Google":
 
   @suggestions = (
-    { query => "google", results => 122000000 },
-    { query => "google toolbar", results => 2620000 },
+    { query => "google",         results => 0, rank => 0 },
+    { query => "google toolbar", results => 0, rank => 1 },
     ...
   );
 
@@ -105,6 +108,7 @@ properties.
 =head1 AUTHOR
 
 Tatsuhiko Miyagawa E<lt>miyagawa@bulknews.netE<gt>
+
 Franck Cuny E<lt>franck@lumberjaph.netE<gt>
 
 =head1 LICENSE
